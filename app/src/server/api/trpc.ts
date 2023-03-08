@@ -56,11 +56,6 @@ type NextApiResponseWithSocket = NextApiResponse & {
 const createWebSocketServer = (res: NextApiResponseWithSocket) => {
   if (!res.socket.server.io) {
     const wss = new Server(res.socket.server);
-    wss.on("connection", async (socket) => {
-      const query = socket.handshake.query;
-      const imageId = query.imageId as string;
-      await socket.join(imageId);
-    });
     res.socket.server.io = wss;
   }
   return res.socket.server.io;

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { emitInvalidateQueries } from "~/server/emitInvalidateQueries";
+import { emitSetQueries } from "~/server/emitSetQueries";
 import { publicProcedure } from "../../trpc";
 
 export const updatePixel = publicProcedure
@@ -14,8 +14,12 @@ export const updatePixel = publicProcedure
       where: { id: input.id },
       data: { color: input.color },
     });
-    emitInvalidateQueries(ctx.wss, pixel.imageId, {
-      pixel: { get: { id: pixel.id } },
-      image: { get: { id: pixel.imageId } },
+    emitSetQueries(ctx.wss, {
+      pixel: {
+        get: {
+          input: { id: pixel.id },
+          data: pixel,
+        },
+      },
     });
   });

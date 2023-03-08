@@ -67,10 +67,11 @@ export type RouterInputs = inferRouterInputs<AppRouter>;
  */
 export type RouterOutputs = inferRouterOutputs<AppRouter>;
 
-export type RoutesInvalidator = {
+export type QueriesSetter = {
   [RKey in keyof RouterInputs]?: {
-    [PKey in keyof RouterInputs[RKey]]?:
-      | RouterInputs[RKey][PKey]
-      | "invalidateAll";
+    [PKey in keyof RouterInputs[RKey]]?: {
+      input: RouterInputs[RKey][PKey];
+      data: RouterOutputs[RKey][PKey];
+    };
   };
 };

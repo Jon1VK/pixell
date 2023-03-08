@@ -19,7 +19,7 @@ const Home = () => {
   );
 };
 
-const imageSizes = ["8x8", "16x16", "32x32"] as const;
+const imageSizes = ["8x8", "16x16", "32x32", "64x64"] as const;
 type ImageSize = (typeof imageSizes)[number];
 
 const NewImageForm = () => {

@@ -3,21 +3,20 @@ import { atom, useAtom, useAtomValue } from "jotai";
 import { useRouter } from "next/router";
 import { type MouseEventHandler, type CSSProperties } from "react";
 import LoadingSpinner from "~/components/LoadingSpinner";
-import { useImageSocketConnection } from "~/hooks/useImageSocketConnection";
+import { useSocketConnection } from "~/hooks/useSocketConnection";
 import { api } from "~/utils/api";
 
 const selectedColorAtom = atom("#ffffff");
 
 const ImagePage = () => {
+  useSocketConnection();
+
   const router = useRouter();
   const imageId = router.query.imageId as string;
-
-  useImageSocketConnection(imageId);
 
   const imageQuery = api.image.get.useQuery({ id: imageId });
 
   if (imageQuery.isLoading) return <LoadingSpinner />;
-
   if (imageQuery.isError) {
     return (
       <h1 className="text-center text-4xl font-bold tracking-tight text-white sm:text-6xl">
@@ -61,20 +60,50 @@ interface ImageComponentProps {
 }
 
 const ImageComponent = (props: ImageComponentProps) => {
+  const apiUtils = api.useContext();
   const selectedColor = useAtomValue(selectedColorAtom);
+
+  const pixelWidth = 512 / props.image.width;
+  const pixelHeight = 512 / props.image.height;
+
+  const updatePixel = async (pixel: { id: string; color: string }) => {
+    if (selectedColor === pixel.color) return;
+    await apiUtils.client.pixel.update.mutate({
+      id: pixel.id,
+      color: selectedColor,
+    });
+  };
+
+  const handleMouseOver: MouseEventHandler<HTMLDivElement> = async (e) => {
+    const target = e.target as HTMLElement;
+    const pixelId = target.dataset.pixelId;
+    const pixelColor = target.dataset.pixelColor;
+    if (!pixelId || !pixelColor || e.buttons !== 1) return;
+    await updatePixel({ id: pixelId, color: pixelColor });
+  };
+
+  const handleMouseDown: MouseEventHandler<HTMLDivElement> = async (e) => {
+    const target = e.target as HTMLElement;
+    const pixelId = target.dataset.pixelId;
+    const pixelColor = target.dataset.pixelColor;
+    if (!pixelId || !pixelColor || e.button !== 0) return;
+    await updatePixel({ id: pixelId, color: pixelColor });
+  };
 
   return (
     <div className="overflow-x-auto">
       <div
         className={`mx-auto mt-10 grid min-w-max max-w-min grid-cols-${props.image.width} grid-rows-${props.image.height}`}
         style={{ "--selected-bg-color": selectedColor } as CSSProperties}
+        onMouseOver={handleMouseOver}
+        onMouseDown={handleMouseDown}
       >
         {props.image.pixels.map((pixel) => (
           <PixelComponent
             key={pixel.id}
             pixel={pixel}
-            width={512 / props.image.width}
-            heigth={512 / props.image.height}
+            width={pixelWidth}
+            heigth={pixelHeight}
           />
         ))}
       </div>
@@ -89,35 +118,12 @@ interface PixelComponentProps {
 }
 
 const PixelComponent = (props: PixelComponentProps) => {
-  const apiUtils = api.useContext();
-  const selectedColor = useAtomValue(selectedColorAtom);
-
   const pixelQuery = api.pixel.get.useQuery(
     { id: props.pixel.id },
-    { initialData: props.pixel }
+    { initialData: props.pixel, enabled: false }
   );
 
   const pixel = pixelQuery.data;
-
-  const updatePixelColor = async () => {
-    if (selectedColor === pixel.color) return;
-    await apiUtils.client.pixel.update.mutate({
-      id: pixel.id,
-      color: selectedColor,
-    });
-  };
-
-  const handleMouseDown: MouseEventHandler<HTMLButtonElement> = async (e) => {
-    if (e.button === 0) {
-      await updatePixelColor();
-    }
-  };
-
-  const handleMouseEnter: MouseEventHandler<HTMLButtonElement> = async (e) => {
-    if (e.buttons === 1) {
-      await updatePixelColor();
-    }
-  };
 
   const style = {
     width: props.width,
@@ -129,8 +135,8 @@ const PixelComponent = (props: PixelComponentProps) => {
     <button
       className={`pixel pixel-colorable border hover:border-gray-900`}
       style={style}
-      onMouseDown={handleMouseDown}
-      onMouseEnter={handleMouseEnter}
+      data-pixel-id={pixel.id}
+      data-pixel-color={pixel.color}
     />
   );
 };

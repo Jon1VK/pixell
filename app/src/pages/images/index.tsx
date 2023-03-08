@@ -1,13 +1,14 @@
-import { type Prisma } from "@prisma/client";
+import { type Pixel, type Prisma } from "@prisma/client";
 import Link from "next/link";
 import { type CSSProperties } from "react";
 import LoadingSpinner from "~/components/LoadingSpinner";
-import { useImageSocketConnection } from "~/hooks/useImageSocketConnection";
+import { useSocketConnection } from "~/hooks/useSocketConnection";
 import { api } from "~/utils/api";
 
 const ImagesPage = () => {
-  const imagesQuery = api.image.getAll.useQuery();
+  useSocketConnection();
 
+  const imagesQuery = api.image.getAll.useQuery();
   const images = imagesQuery.data ?? [];
 
   return (
@@ -43,14 +44,12 @@ interface ImageComponentProps {
 }
 
 const ImageComponent = (props: ImageComponentProps) => {
-  useImageSocketConnection(props.image.id);
-
   const pixelWidth = 256 / props.image.width;
   const pixelHeight = 256 / props.image.height;
 
   const imageQuery = api.image.get.useQuery(
     { id: props.image.id },
-    { initialData: props.image }
+    { initialData: props.image, enabled: false }
   );
 
   const image = imageQuery.data;
@@ -60,19 +59,43 @@ const ImageComponent = (props: ImageComponentProps) => {
       className={`mx-auto grid min-w-max max-w-min grid-cols-${props.image.width} grid-rows-${props.image.height}`}
     >
       {image.pixels.map((pixel) => (
-        <div
+        <PixelComponent
           key={pixel.id}
-          className={`pixel border`}
-          style={
-            {
-              width: pixelWidth,
-              height: pixelHeight,
-              "--bg-color": pixel.color,
-            } as CSSProperties
-          }
+          pixel={pixel}
+          width={pixelWidth}
+          height={pixelHeight}
         />
       ))}
     </div>
+  );
+};
+
+interface PixelComponentProps {
+  pixel: Pixel;
+  width: number;
+  height: number;
+}
+
+const PixelComponent = (props: PixelComponentProps) => {
+  const pixelQuery = api.pixel.get.useQuery(
+    { id: props.pixel.id },
+    { initialData: props.pixel, enabled: false }
+  );
+
+  const pixel = pixelQuery.data;
+
+  return (
+    <div
+      key={pixel.id}
+      className={`pixel border`}
+      style={
+        {
+          width: props.width,
+          height: props.height,
+          "--bg-color": pixel.color,
+        } as CSSProperties
+      }
+    />
   );
 };
 

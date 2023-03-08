@@ -3,7 +3,11 @@ import { z } from "zod";
 import { publicProcedure } from "../../trpc";
 
 export const getPixel = publicProcedure
-  .input(z.object({ id: z.string() }))
+  .input(
+    z.object({
+      id: z.string(),
+    })
+  )
   .query(async ({ ctx, input }) => {
     const pixel = await ctx.prisma.pixel.findUnique({
       where: { id: input.id },
