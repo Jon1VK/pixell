@@ -1,0 +1,31 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Image {
+    id         String  @id @default(cuid())
+    title      String
+    width      Int
+    height     Int
+    isFinished Boolean @default(false)
+    pixels     Pixel[]
+}
+
+model Pixel {
+    id      String @id @default(cuid())
+    posX    Int
+    posY    Int
+    color   String @default("#ffffff")
+    imageId String
+    image   Image  @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+    @@unique([imageId, posX, posY])
+}

@@ -1,0 +1,11 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.pixel {
+  background-color: var(--bg-color);
+}
+
+.pixel-colorable:hover {
+  background-color: var(--selected-bg-color);
+}
