@@ -1,12 +1,17 @@
 import { type Pixel, type Prisma } from "@prisma/client";
 import { atom, useAtom, useAtomValue } from "jotai";
 import { useRouter } from "next/router";
-import { type MouseEventHandler, type CSSProperties } from "react";
+import {
+  type MouseEventHandler,
+  type ChangeEventHandler,
+  type CSSProperties,
+  useRef,
+} from "react";
 import LoadingSpinner from "~/components/LoadingSpinner";
 import { useSocketConnection } from "~/hooks/useSocketConnection";
 import { api } from "~/utils/api";
 
-const selectedColorAtom = atom("#ffffff");
+const selectedColorAtom = atom("#f04e30");
 
 const ImagePage = () => {
   useSocketConnection();
@@ -43,13 +48,22 @@ const ImagePage = () => {
 
 const ColorSelector = () => {
   const [selectedColor, setSelectedColor] = useAtom(selectedColorAtom);
+  const throttleRef = useRef(false);
+
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    if (throttleRef.current) return;
+    throttleRef.current = true;
+    setSelectedColor(e.currentTarget.value);
+    setTimeout(() => (throttleRef.current = false), 100);
+  };
+
   return (
     <input
       type="color"
       name="selectedColor"
       id="selectedColor"
       value={selectedColor}
-      onChange={(e) => setSelectedColor(e.target.value)}
+      onChange={handleChange}
       className="mx-auto mt-10 block border-0 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400"
     />
   );
@@ -74,19 +88,26 @@ const ImageComponent = (props: ImageComponentProps) => {
     });
   };
 
+  const getPixelData = (targetElement: HTMLElement) => ({
+    pixelId: targetElement.dataset.pixelId,
+    pixelColor: targetElement.dataset.pixelColor,
+  });
+
   const handleMouseOver: MouseEventHandler<HTMLDivElement> = async (e) => {
-    const target = e.target as HTMLElement;
-    const pixelId = target.dataset.pixelId;
-    const pixelColor = target.dataset.pixelColor;
+    const { pixelId, pixelColor } = getPixelData(e.target as HTMLElement);
     if (!pixelId || !pixelColor || e.buttons !== 1) return;
     await updatePixel({ id: pixelId, color: pixelColor });
   };
 
   const handleMouseDown: MouseEventHandler<HTMLDivElement> = async (e) => {
-    const target = e.target as HTMLElement;
-    const pixelId = target.dataset.pixelId;
-    const pixelColor = target.dataset.pixelColor;
+    const { pixelId, pixelColor } = getPixelData(e.target as HTMLElement);
     if (!pixelId || !pixelColor || e.button !== 0) return;
+    await updatePixel({ id: pixelId, color: pixelColor });
+  };
+
+  const handleClick: MouseEventHandler<HTMLDivElement> = async (e) => {
+    const { pixelId, pixelColor } = getPixelData(e.target as HTMLElement);
+    if (!pixelId || !pixelColor) return;
     await updatePixel({ id: pixelId, color: pixelColor });
   };
 
@@ -97,6 +118,7 @@ const ImageComponent = (props: ImageComponentProps) => {
         style={{ "--selected-bg-color": selectedColor } as CSSProperties}
         onMouseOver={handleMouseOver}
         onMouseDown={handleMouseDown}
+        onClick={handleClick}
       >
         {props.image.pixels.map((pixel) => (
           <PixelComponent
