@@ -5,8 +5,11 @@ import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import Head from "next/head";
 import MainLayout from "~/layouts/MainLayout";
+import { useSocketConnection } from "~/hooks/useSocketConnection";
 
 const MyApp: AppType = ({ Component, pageProps }) => {
+  useSocketConnection();
+
   return (
     <>
       <Head>

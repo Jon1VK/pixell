@@ -2,12 +2,9 @@ import { type Pixel, type Prisma } from "@prisma/client";
 import Link from "next/link";
 import { type CSSProperties } from "react";
 import LoadingSpinner from "~/components/LoadingSpinner";
-import { useSocketConnection } from "~/hooks/useSocketConnection";
 import { api } from "~/utils/api";
 
 const ImagesPage = () => {
-  useSocketConnection();
-
   const imagesQuery = api.image.getAll.useQuery();
   const images = imagesQuery.data ?? [];
 

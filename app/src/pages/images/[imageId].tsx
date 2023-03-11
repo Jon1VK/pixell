@@ -8,14 +8,11 @@ import {
   useRef,
 } from "react";
 import LoadingSpinner from "~/components/LoadingSpinner";
-import { useSocketConnection } from "~/hooks/useSocketConnection";
 import { api } from "~/utils/api";
 
 const selectedColorAtom = atom("#f04e30");
 
 const ImagePage = () => {
-  useSocketConnection();
-
   const router = useRouter();
   const imageId = router.query.imageId as string;
 
