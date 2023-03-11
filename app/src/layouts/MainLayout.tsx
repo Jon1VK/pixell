@@ -49,10 +49,6 @@ const BackgroundDecorationOne = () => {
 const Navigation = () => {
   const apiUtils = api.useContext();
 
-  const handleMouseEnterOnImagesLink = async () => {
-    await apiUtils.image.getAll.prefetch();
-  };
-
   return (
     <nav className="flex items-center px-8 pt-6">
       <div className="flex flex-1">
@@ -63,7 +59,7 @@ const Navigation = () => {
       </div>
       <Link
         href="/images"
-        onMouseEnter={handleMouseEnterOnImagesLink}
+        onMouseEnter={() => apiUtils.image.getAll.prefetch()}
         className="text-sm font-semibold leading-6"
       >
         Images
