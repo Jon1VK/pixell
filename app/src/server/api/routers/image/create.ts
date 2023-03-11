@@ -33,11 +33,6 @@ export const createImage = publicProcedure
           },
         },
       },
-      include: {
-        pixels: {
-          orderBy: [{ posY: "asc" }, { posX: "asc" }],
-        },
-      },
     });
     const images = await ctx.prisma.image.findMany({
       include: {
