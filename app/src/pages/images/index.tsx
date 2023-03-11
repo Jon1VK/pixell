@@ -1,6 +1,5 @@
-import { type Pixel, type Prisma } from "@prisma/client";
 import Link from "next/link";
-import { type CSSProperties } from "react";
+import ImageComponent from "~/components/ImageComponent";
 import LoadingSpinner from "~/components/LoadingSpinner";
 import { api } from "~/utils/api";
 
@@ -9,7 +8,7 @@ const ImagesPage = () => {
   const images = imagesQuery.data ?? [];
 
   return (
-    <div className="mx-auto text-center">
+    <div className="text-center">
       <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
         Images
       </h1>
@@ -28,71 +27,16 @@ const ImagesPage = () => {
             <h2 className="my-3 text-lg font-medium tracking-tight text-gray-200 sm:text-xl">
               {image.title}
             </h2>
-            <ImageComponent key={image.id} image={image} />
+            <ImageComponent
+              key={image.id}
+              image={image}
+              width={256}
+              height={256}
+            />
           </Link>
         ))}
       </div>
     </div>
-  );
-};
-
-interface ImageComponentProps {
-  image: Prisma.ImageGetPayload<{ include: { pixels: true } }>;
-}
-
-const ImageComponent = (props: ImageComponentProps) => {
-  const pixelWidth = 256 / props.image.width;
-  const pixelHeight = 256 / props.image.height;
-
-  const imageQuery = api.image.get.useQuery(
-    { id: props.image.id },
-    { initialData: props.image, enabled: false }
-  );
-
-  const image = imageQuery.data;
-
-  return (
-    <div
-      className={`mx-auto grid min-w-max max-w-min grid-cols-${props.image.width} grid-rows-${props.image.height}`}
-    >
-      {image.pixels.map((pixel) => (
-        <PixelComponent
-          key={pixel.id}
-          pixel={pixel}
-          width={pixelWidth}
-          height={pixelHeight}
-        />
-      ))}
-    </div>
-  );
-};
-
-interface PixelComponentProps {
-  pixel: Pixel;
-  width: number;
-  height: number;
-}
-
-const PixelComponent = (props: PixelComponentProps) => {
-  const pixelQuery = api.pixel.get.useQuery(
-    { id: props.pixel.id },
-    { initialData: props.pixel, enabled: false }
-  );
-
-  const pixel = pixelQuery.data;
-
-  return (
-    <div
-      key={pixel.id}
-      className={`pixel border`}
-      style={
-        {
-          width: props.width,
-          height: props.height,
-          "--bg-color": pixel.color,
-        } as CSSProperties
-      }
-    />
   );
 };
 
