@@ -1,8 +1,17 @@
-const LoadingSpinner = () => {
+import { classNames } from "~/utils/classNames";
+
+interface LoadingSpinnerProps {
+  sm?: boolean;
+}
+
+const LoadingSpinner = (props: LoadingSpinnerProps) => {
   return (
     <div className="flex h-full items-center justify-center">
       <svg
-        className="h-12 w-12 animate-spin"
+        className={classNames(
+          "animate-spin",
+          props.sm ? "h-5 w-5" : "h-12 w-12"
+        )}
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"

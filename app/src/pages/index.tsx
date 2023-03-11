@@ -1,6 +1,7 @@
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { z } from "zod";
+import LoadingSpinner from "~/components/LoadingSpinner";
 import { api } from "~/utils/api";
 import { classNames } from "~/utils/classNames";
 
@@ -20,22 +21,17 @@ const Home = () => {
 };
 
 const imageSizes = ["8x8", "16x16", "32x32", "64x64"] as const;
-type ImageSize = (typeof imageSizes)[number];
 
 const NewImageForm = () => {
   const router = useRouter();
-  const apiUtils = api.useContext();
   const [title, setTitle] = useState("");
 
-  const validTitle = z.string().min(1).max(50).safeParse(title).success;
+  const { mutate: createImage, isLoading } = api.image.create.useMutation({
+    onSuccess: (image) => router.push(`/images/${image.id}`),
+  });
 
-  const makeImageSizeClickHandler = (imageSize: ImageSize) => async () => {
-    const image = await apiUtils.client.image.create.mutate({
-      title,
-      imageSize,
-    });
-    await router.push(`/images/${image.id}`);
-  };
+  const validTitle = z.string().min(1).max(50).safeParse(title).success;
+  const mutatable = validTitle && !isLoading;
 
   return (
     <div className="mt-10">
@@ -56,13 +52,18 @@ const NewImageForm = () => {
         {imageSizes.map((imageSize) => (
           <button
             key={imageSize}
-            disabled={!validTitle}
-            onClick={makeImageSizeClickHandler(imageSize)}
+            disabled={!mutatable}
+            onClick={() => createImage({ title, imageSize })}
             className={classNames(
-              "rounded-md px-3.5 py-2.5 font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400",
-              validTitle ? "bg-indigo-500 hover:bg-indigo-400" : "bg-gray-700"
+              "relative overflow-hidden rounded-md px-3.5 py-2.5 font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400",
+              mutatable ? "bg-indigo-600 hover:bg-indigo-500" : "bg-gray-800"
             )}
           >
+            {isLoading && (
+              <div className="absolute inset-0 backdrop-blur">
+                <LoadingSpinner sm />
+              </div>
+            )}
             {imageSize}
           </button>
         ))}
