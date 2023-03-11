@@ -50,7 +50,7 @@ const ImageComponent = (props: ImageComponentProps) => {
   return (
     <div className="overflow-x-auto">
       <div
-        className={`mx-auto mt-10 grid min-w-max max-w-min grid-cols-${props.image.width} grid-rows-${props.image.height}`}
+        className={`grid min-w-max max-w-min grid-cols-${props.image.width} grid-rows-${props.image.height}`}
         style={{ "--selected-bg-color": selectedColor } as CSSProperties}
         onMouseOver={handleMouseOver}
         onMouseDown={handleMouseDown}

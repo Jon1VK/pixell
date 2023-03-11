@@ -29,8 +29,10 @@ const ImagePage = () => {
       <p className="mt-6 text-lg leading-8 text-gray-300">
         Select a color and start painting!
       </p>
-      <ColorSelector />
-      <ImageComponent image={image} width={512} height={512} colorable />
+      <div className="mt-10 flex flex-col items-center gap-10">
+        <ColorSelector />
+        <ImageComponent image={image} width={512} height={512} colorable />
+      </div>
     </div>
   );
 };

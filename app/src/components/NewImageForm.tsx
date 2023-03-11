@@ -19,7 +19,7 @@ const NewImageForm = () => {
   const mutatable = validTitle && !isLoading;
 
   return (
-    <div className="mt-10">
+    <>
       <label htmlFor="title" className="sr-only">
         Title
       </label>
@@ -53,7 +53,7 @@ const NewImageForm = () => {
           </button>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 
