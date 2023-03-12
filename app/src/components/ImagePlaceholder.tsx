@@ -9,7 +9,7 @@ const ImagePlaceholder = (props: ImagePlaceholderProps) => {
   const pixelStyle = {
     width: props.width / 16,
     height: props.height / 16,
-    "--bg-color": "#ffffff",
+    "--bg-color": "#cccccc",
   } as CSSProperties;
 
   return (
