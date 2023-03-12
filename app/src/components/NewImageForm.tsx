@@ -16,7 +16,7 @@ const NewImageForm = () => {
   });
 
   const validTitle = z.string().min(1).max(50).safeParse(title).success;
-  const mutatable = validTitle && !isLoading;
+  const submittable = validTitle && !isLoading;
 
   return (
     <>
@@ -37,11 +37,11 @@ const NewImageForm = () => {
         {imageSizes.map((imageSize) => (
           <button
             key={imageSize}
-            disabled={!mutatable}
+            disabled={!submittable}
             onClick={() => createImage({ title, imageSize })}
             className={classNames(
               "relative overflow-hidden rounded-md px-3.5 py-2.5 font-semibold text-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-400",
-              mutatable ? "bg-indigo-600 hover:bg-indigo-500" : "bg-gray-800"
+              submittable ? "bg-indigo-600 hover:bg-indigo-500" : "bg-gray-800"
             )}
           >
             {isLoading && (
