@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { type ReactNode } from "react";
-import { api } from "~/utils/api";
 
 const MainLayout = (props: { children: ReactNode }) => {
   return (
@@ -47,8 +46,6 @@ const BackgroundDecorationOne = () => {
 };
 
 const Navigation = () => {
-  const apiUtils = api.useContext();
-
   return (
     <nav className="flex items-center px-8 pt-6">
       <div className="flex flex-1">
@@ -57,11 +54,7 @@ const Navigation = () => {
           <Image width={32} height={32} src="/images/favicon.svg" alt="Logo" />
         </Link>
       </div>
-      <Link
-        href="/images"
-        onMouseEnter={() => apiUtils.image.getAll.prefetch()}
-        className="text-sm font-semibold leading-6"
-      >
+      <Link href="/images" className="text-sm font-semibold leading-6">
         Images
       </Link>
     </nav>

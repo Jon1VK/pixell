@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { emitSetQueries } from "~/server/emitSetQueries";
 import { publicProcedure } from "../../trpc";
 
 const imageSizes = {
@@ -18,7 +17,7 @@ export const createImage = publicProcedure
   )
   .mutation(async ({ ctx, input }) => {
     const { height, width } = imageSizes[input.imageSize];
-    const image = await ctx.prisma.image.create({
+    return await ctx.prisma.image.create({
       data: {
         title: input.title,
         height,
@@ -34,21 +33,4 @@ export const createImage = publicProcedure
         },
       },
     });
-    const images = await ctx.prisma.image.findMany({
-      include: {
-        pixels: {
-          orderBy: [{ posY: "asc" }, { posX: "asc" }],
-        },
-      },
-      orderBy: { title: "asc" },
-    });
-    emitSetQueries(ctx.wss, {
-      image: {
-        getAll: {
-          input: undefined,
-          data: images,
-        },
-      },
-    });
-    return image;
   });
