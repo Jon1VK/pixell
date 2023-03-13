@@ -1,6 +1,9 @@
+import { useAtomValue } from "jotai";
 import Link from "next/link";
+import { imagesFilterAtom } from "~/atoms/imagesFilter";
 import ImageComponent from "~/components/ImageComponent";
 import ImagePlaceholder from "~/components/ImagePlaceholder";
+import ImagesFilter from "~/components/ImagesFilter";
 import LoadingSpinner from "~/components/LoadingSpinner";
 import { api } from "~/utils/api";
 import { classNames } from "~/utils/classNames";
@@ -8,8 +11,13 @@ import { classNames } from "~/utils/classNames";
 const PAGE_SIZE = 8;
 
 const ImagesPage = () => {
+  const filter = useAtomValue(imagesFilterAtom);
+
   const imagesQuery = api.image.getAll.useInfiniteQuery(
-    { take: PAGE_SIZE },
+    {
+      take: PAGE_SIZE,
+      filter,
+    },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       cacheTime: 0,
@@ -30,9 +38,18 @@ const ImagesPage = () => {
       <p className="my-6 text-lg leading-8 text-gray-300">
         Browse the beautiful collection of PiXell art!
       </p>
+      <ImagesFilter />
       {imagesQuery.isError && (
-        <p className="text-gray-300-600 text-lg font-bold leading-8">
+        <p className="text-lg font-bold leading-8 text-gray-300">
           An error occurred while fetching the images. Please, reload the page!
+        </p>
+      )}
+      {!imagesQuery.isLoading && images.length === 0 && (
+        <p className="mt-20 text-lg font-bold leading-8 text-gray-300">
+          No images was found.{" "}
+          <Link href="/" className="text-indigo-300 hover:text-indigo-400">
+            Go and make one!
+          </Link>
         </p>
       )}
       <div className="mt-20 grid items-end justify-items-center gap-y-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">

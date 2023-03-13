@@ -3,9 +3,8 @@ import { useState } from "react";
 import { z } from "zod";
 import { api } from "~/utils/api";
 import { classNames } from "~/utils/classNames";
+import { imageSizes } from "~/utils/imageSizes";
 import LoadingSpinner from "./LoadingSpinner";
-
-const imageSizes = ["8x8", "16x16", "32x32", "64x64"] as const;
 
 const NewImageForm = () => {
   const router = useRouter();
