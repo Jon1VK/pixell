@@ -1,4 +1,4 @@
-import { type ChangeEventHandler, Fragment, useRef, useState } from "react";
+import { type ChangeEventHandler, Fragment, useState } from "react";
 import { Listbox, Transition } from "@headlessui/react";
 import { useAtom } from "jotai";
 import {
@@ -9,6 +9,7 @@ import {
   type ImageSize,
   imageSizes as availableImageSizes,
 } from "~/utils/imageSizes";
+import { useDebounce } from "~/hooks/useDebounce";
 
 const ImagesFilter = () => {
   return (
@@ -23,14 +24,11 @@ const ImageSizeSelect = () => {
   const [selectedImageSizes, setSelectedImageSizes] =
     useAtom(imageSizesFilterAtom);
   const [imageSizes, setImageSizes] = useState(selectedImageSizes);
-  const debounceRef = useRef<NodeJS.Timeout>();
+  const debounce = useDebounce(1000);
 
   const handleChange = (newImageSizes: ImageSize[]) => {
     setImageSizes(newImageSizes);
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      setSelectedImageSizes(newImageSizes);
-    }, 1000);
+    debounce(() => setSelectedImageSizes(newImageSizes));
   };
 
   return (
@@ -67,15 +65,12 @@ const ImageSizeSelect = () => {
 const ImageTitleInput = () => {
   const [imageTitle, setImageTitle] = useAtom(imageTitleFilterAtom);
   const [title, setTitle] = useState(imageTitle);
-  const debounceRef = useRef<NodeJS.Timeout>();
+  const debounce = useDebounce(1000);
 
   const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const newTitle = e.currentTarget.value;
     setTitle(newTitle);
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      setImageTitle(newTitle);
-    }, 1000);
+    debounce(() => setImageTitle(newTitle));
   };
 
   return (
