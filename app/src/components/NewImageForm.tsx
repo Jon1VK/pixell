@@ -12,7 +12,7 @@ const NewImageForm = () => {
   });
 
   return (
-    <div className="mt-10 flex items-center justify-center gap-x-6">
+    <div className="grid grid-cols-2 gap-6 sm:grid-cols-4">
       {imageSizes.map((imageSize) => (
         <button
           key={imageSize}
