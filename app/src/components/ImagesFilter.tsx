@@ -13,10 +13,36 @@ import { useDebounce } from "~/hooks/useDebounce";
 
 const ImagesFilter = () => {
   return (
-    <div className="flex items-center justify-center gap-3">
+    <div className="grid gap-3 gap-y-4 sm:grid-cols-3">
+      <div className="sm:col-span-2">
+        <ImageTitleInput />
+      </div>
       <ImageSizeSelect />
-      <ImageTitleInput />
     </div>
+  );
+};
+
+const ImageTitleInput = () => {
+  const [imageTitle, setImageTitle] = useAtom(imageTitleFilterAtom);
+  const [title, setTitle] = useState(imageTitle);
+  const debounce = useDebounce(1000);
+
+  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const newTitle = e.currentTarget.value;
+    setTitle(newTitle);
+    debounce(() => setImageTitle(newTitle));
+  };
+
+  return (
+    <input
+      type="text"
+      name="Title"
+      max={30}
+      value={title}
+      onChange={handleChange}
+      className="block w-full rounded-md border-0 py-2 text-sm text-gray-900 shadow-sm ring-2 ring-inset ring-transparent placeholder:text-gray-400 focus:ring-orange-500"
+      placeholder="Title"
+    />
   );
 };
 
@@ -34,7 +60,7 @@ const ImageSizeSelect = () => {
   return (
     <Listbox value={imageSizes} onChange={handleChange} multiple>
       <div className="relative">
-        <Listbox.Button className="relative rounded-md bg-orange-600 py-2 px-4 text-sm font-medium text-white shadow-sm ring-2 ring-inset ring-transparent focus:outline-none focus:ring-white">
+        <Listbox.Button className="relative rounded-md bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm ring-2 ring-inset ring-transparent hover:bg-indigo-500 focus:outline-none focus:ring-white sm:w-full">
           Sizes
         </Listbox.Button>
         <Transition
@@ -59,30 +85,6 @@ const ImageSizeSelect = () => {
         </Transition>
       </div>
     </Listbox>
-  );
-};
-
-const ImageTitleInput = () => {
-  const [imageTitle, setImageTitle] = useAtom(imageTitleFilterAtom);
-  const [title, setTitle] = useState(imageTitle);
-  const debounce = useDebounce(1000);
-
-  const handleChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const newTitle = e.currentTarget.value;
-    setTitle(newTitle);
-    debounce(() => setImageTitle(newTitle));
-  };
-
-  return (
-    <input
-      type="text"
-      name="Title"
-      max={30}
-      value={title}
-      onChange={handleChange}
-      className="block rounded-md border-0 py-2 text-sm text-gray-900 shadow-sm ring-2 ring-inset ring-transparent placeholder:text-gray-400 focus:ring-orange-500"
-      placeholder="Title"
-    />
   );
 };
 

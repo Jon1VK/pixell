@@ -25,6 +25,7 @@ export const getAllImages = publicProcedure
   .query(async ({ ctx, input }) => {
     const images = await ctx.prisma.image.findMany({
       where: {
+        isFinished: true,
         OR: input.filter?.imageSizes,
         title: {
           mode: "insensitive",

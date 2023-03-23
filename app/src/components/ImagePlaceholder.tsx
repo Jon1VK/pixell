@@ -13,8 +13,8 @@ const ImagePlaceholder = (props: ImagePlaceholderProps) => {
   } as CSSProperties;
 
   return (
-    <div className="overflow-x-auto">
-      <div className="grid min-w-max max-w-min grid-cols-16 grid-rows-16">
+    <div className="w-full overflow-x-auto">
+      <div className="mx-auto grid min-w-max max-w-min grid-cols-16 grid-rows-16">
         {Array.from({ length: 256 }, (_, index) => (
           <div key={index} className="pixel border" style={pixelStyle} />
         ))}

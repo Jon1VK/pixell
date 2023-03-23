@@ -32,26 +32,29 @@ const ImagesPage = () => {
 
   return (
     <div className="text-center">
-      <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
-        Images
-      </h1>
-      <p className="my-6 text-lg leading-8 text-gray-300">
-        Browse the beautiful collection of PiXell art!
-      </p>
-      <ImagesFilter />
-      {imagesQuery.isError && (
-        <p className="text-lg font-bold leading-8 text-gray-300">
-          An error occurred while fetching the images. Please, reload the page!
+      <div className="mx-auto max-w-lg">
+        <h1 className="text-4xl font-bold tracking-tight text-white sm:text-6xl">
+          Images
+        </h1>
+        <p className="my-6 text-lg leading-8 text-gray-300">
+          Browse the beautiful collection of PiXell art!
         </p>
-      )}
-      {!imagesQuery.isLoading && images.length === 0 && (
-        <p className="mt-20 text-lg font-bold leading-8 text-gray-300">
-          No images was found.{" "}
-          <Link href="/" className="text-indigo-300 hover:text-indigo-400">
-            Go and make one!
-          </Link>
-        </p>
-      )}
+        <ImagesFilter />
+        {imagesQuery.isError && (
+          <p className="text-lg font-bold leading-8 text-gray-300">
+            An error occurred while fetching the images. Please, reload the
+            page!
+          </p>
+        )}
+        {!imagesQuery.isLoading && images.length === 0 && (
+          <p className="mt-20 text-lg font-bold leading-8 text-gray-300">
+            No images was found.{" "}
+            <Link href="/" className="text-indigo-500 hover:text-indigo-400">
+              Go and make one!
+            </Link>
+          </p>
+        )}
+      </div>
       <div className="mt-20 grid items-end justify-items-center gap-y-10 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {images.map((image) => (
           <Link href={`/images/${image.id}`} key={image.id}>

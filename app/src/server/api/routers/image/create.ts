@@ -5,7 +5,6 @@ import { publicProcedure } from "../../trpc";
 export const createImage = publicProcedure
   .input(
     z.object({
-      title: z.string().min(1).max(30),
       imageSize: z.enum(imageSizes),
     })
   )
@@ -13,7 +12,7 @@ export const createImage = publicProcedure
     const { height, width } = imageSizeMapping[input.imageSize];
     return await ctx.prisma.image.create({
       data: {
-        title: input.title,
+        title: "",
         height,
         width,
         pixels: {

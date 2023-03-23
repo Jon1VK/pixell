@@ -54,7 +54,10 @@ const Navigation = () => {
           <Image width={32} height={32} src="/images/favicon.svg" alt="Logo" />
         </Link>
       </div>
-      <Link href="/images" className="text-sm font-semibold leading-6">
+      <Link
+        href="/images"
+        className="font-semibold leading-6 hover:text-gray-200"
+      >
         Images
       </Link>
     </nav>
