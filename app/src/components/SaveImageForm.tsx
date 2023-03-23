@@ -14,7 +14,7 @@ const SaveImageForm = () => {
   const { mutate: saveImage, isLoading: isSaving } =
     api.image.save.useMutation();
 
-  const isValidTitle = z.string().min(1).max(50).safeParse(title);
+  const isValidTitle = z.string().min(1).max(50).safeParse(title).success;
   const isSavable = isValidTitle && !isSaving;
 
   return (
